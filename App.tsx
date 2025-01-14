@@ -1,11 +1,16 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
+  DrawerContentScrollView,
   createDrawerNavigator,
   useDrawerProgress,
 } from '@react-navigation/drawer';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {
+  DrawerActions,
+  NavigationContainer,
+  useNavigation,
+} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Button, Text, View} from 'react-native';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -29,8 +34,8 @@ const BottomTabNavigator = () => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Tab.Screen name="Home" component={HomeStackNavigator} />
-      <Tab.Screen name="Contact" component={ContactScreen} />
+      <Tab.Screen name="HomeRootView" component={HomeStackNavigator} />
+      <Tab.Screen name="ContactRootView" component={ContactScreen} />
     </Tab.Navigator>
   );
 };
@@ -39,73 +44,140 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Drawer.Navigator
-        drawerContent={DrawerContent}
         screenOptions={({route}) => ({
           headerShown: false,
           drawerStyle: {
-            backgroundColor: '#1b1b2c',
-            width: 200,
+            backgroundColor: 'white',
+            width: 180,
           },
 
           drawerType: 'front',
           swipeEdgeWidth: 30, // Edge swipe sensitivity
           overlayColor: 'transparent', // Prevent default dark overlay
-        })}>
+        })}
+        drawerContent={CustomDrawerContent}>
         <Drawer.Screen
           name="Drawer"
           options={{
+            drawerStatusBarAnimation: 'slide',
             sceneStyle: {
-              backgroundColor: '#1b1b2c',
+              backgroundColor: 'white',
             },
           }}
-          component={() => (
-            <CustomAnimatedScreen>
-              <BottomTabNavigator />
-            </CustomAnimatedScreen>
-          )}
+          component={CustomAnimatedScreen}
         />
       </Drawer.Navigator>
     </NavigationContainer>
   );
 }
 
-const DrawerContent = () => {
-  return (
-    <View>
-      <Text>Drawer Content</Text>
-    </View>
-  );
-};
-
-function CustomAnimatedScreen({children}) {
+const AnimatedDrawer = ({}) => {
+  const insets = useSafeAreaInsets();
   const progress = useDrawerProgress();
-  const {top} = useSafeAreaInsets();
 
+  // Animate the drawer's translation and border radius
   const animatedStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(progress.value, [0, 1], [0, 200 + 90]);
-    const translateY = interpolate(progress.value, [0, 1], [0, top]);
-    const rotateZ = interpolate(progress.value, [0, 1], [0, -10]);
-    const borderRadius = interpolate(progress.value, [0, 1], [0, 48]);
+    const translateY = interpolate(progress.value, [0, 1], [0, insets.top]);
+    const borderTopLeftRadius = interpolate(progress.value, [0, 1], [0, 16]);
+
     return {
-      transform: [{translateX}, {translateY}, {rotateZ: `${rotateZ}deg`}],
-      borderRadius,
+      transform: [{translateY}],
+      borderTopLeftRadius,
     };
   });
 
   return (
-    // <View>
+    <View
+      style={{
+        flexGrow: 1,
+        alignSelf: 'stretch',
+      }}>
+      <Animated.View
+        style={[
+          {
+            backgroundColor: '#1b1b2c',
+            flex: 1,
+            flexGrow: 1,
+            margin: 0,
+            width: '100%',
+            padding: 16,
+          },
+          animatedStyle,
+        ]}>
+        {/* Add your drawer items or custom content here */}
+        <Text style={{color: 'white'}}>Drawer Item 1</Text>
+        <Text style={{color: 'white'}}>Drawer Item 2</Text>
+      </Animated.View>
+    </View>
+  );
+};
+
+const CustomDrawerContent = ({}) => {
+  return (
+    <DrawerContentScrollView
+      style={{
+        margin: 0,
+        padding: 0,
+        backgroundColor: 'white',
+      }}
+      contentContainerStyle={{
+        position: 'relative',
+        flex: 1,
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingStart: 0,
+        paddingEnd: 0,
+      }}>
+      <AnimatedDrawer />
+    </DrawerContentScrollView>
+  );
+};
+
+function CustomAnimatedScreen() {
+  const progress = useDrawerProgress();
+  const {top} = useSafeAreaInsets();
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateX = interpolate(progress.value, [0, 1], [0, 180 + 90]);
+    // const translateY = interpolate(progress.value, [0, 1], [-top, 0]);
+    const rotateZ = interpolate(progress.value, [0, 1], [0, -10]);
+    const borderRadius = interpolate(progress.value, [0, 1], [0, 48]);
+    return {
+      transform: [{translateX}, {rotateZ: `${rotateZ}deg`}],
+      borderRadius,
+    };
+  });
+
+  const animatedStyle2 = useAnimatedStyle(() => {
+    const translateY = interpolate(progress.value, [0, 1], [0, top]);
+
+    return {transform: [{translateY}]};
+  });
+
+  return (
     <Animated.View
-      style={[
-        {flex: 1, backgroundColor: '#fafafa', overflow: 'hidden'},
-        animatedStyle,
-      ]}>
-      {children}
+      style={[{flex: 1, backgroundColor: '#1b1b2c'}, animatedStyle2]}>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            backgroundColor: '#fafafa',
+            overflow: 'hidden',
+          },
+          animatedStyle,
+        ]}>
+        <BottomTabNavigator />
+      </Animated.View>
     </Animated.View>
   );
 }
 
 const HomeScreen = () => {
-  const {navigate} = useNavigation();
+  const {navigate, dispatch} = useNavigation();
+
+  const openDrawer = useCallback(() => {
+    dispatch(DrawerActions.openDrawer());
+  }, []);
 
   const onPress = () => {
     navigate('Profile');
@@ -115,11 +187,13 @@ const HomeScreen = () => {
     navigate('Contact');
   };
   return (
-    <View>
+    <SafeAreaView>
+      <Button title="Open Drawer" onPress={openDrawer} />
+
       <Text>Home Screen</Text>
       <Button title="Navigate to Profile" onPress={onPress} />
       <Button title="Navigate to Contact" onPress={onPress2} />
-    </View>
+    </SafeAreaView>
   );
 };
 
