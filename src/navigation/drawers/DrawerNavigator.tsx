@@ -1,35 +1,28 @@
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {AnimatedDrawer} from '../../widgets/drawer/AnimatedDrawer';
-import {SCREEN} from '../../utils/screenNames';
-import {AnimatedScreenWrapper} from '../../widgets/drawer/AnimatedScreenWrapper';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { AnimatedDrawer } from '../../widgets/drawer/AnimatedDrawer';
+import { SCREEN } from '../../utils/screenNames';
+import { AnimatedScreenWrapper } from '../../widgets/drawer/AnimatedScreenWrapper';
 
 const Drawer = createDrawerNavigator();
+
 export const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         headerShown: false,
-
+        sceneStyle: {
+          backgroundColor: '#FAFAFA',
+        },
         drawerStyle: {
-          backgroundColor: 'white',
+          backgroundColor: '#FAFAFA',
           width: 160,
         },
-
         drawerType: 'back',
-        swipeEdgeWidth: 30, // Edge swipe sensitivity
-        overlayColor: 'transparent', // Prevent default dark overlay
+        swipeEdgeWidth: 30,
+        overlayColor: 'transparent',
       })}
       drawerContent={props => <AnimatedDrawer {...props} />}>
-      <Drawer.Screen
-        name={SCREEN.ROOT}
-        options={{
-          drawerStatusBarAnimation: 'slide',
-          sceneStyle: {
-            backgroundColor: 'white',
-          },
-        }}
-        component={AnimatedScreenWrapper}
-      />
+      <Drawer.Screen name={SCREEN.ROOT} component={AnimatedScreenWrapper} />
     </Drawer.Navigator>
   );
 };

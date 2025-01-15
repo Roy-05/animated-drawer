@@ -1,52 +1,54 @@
-import {useDrawerProgress} from '@react-navigation/drawer';
+import { useDrawerProgress } from '@react-navigation/drawer';
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {BottomTabNavigator} from '../../navigation/bottomTabs/BottomTabNavigator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomTabNavigator } from '../../navigation/bottomTabs/BottomTabNavigator';
+import { StyleSheet } from 'react-native';
+import { ANIMATED_SCREEN } from '../../utils/constants';
 
 export const AnimatedScreenWrapper = () => {
   const progress = useDrawerProgress();
-  const {top} = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(
-      progress.value,
-      [0, 1],
-      [0, 44],
-      Extrapolation.CLAMP,
-    );
-    const translateY = interpolate(progress.value, [0, 1], [0, 16]);
-    const rotateZ = interpolate(progress.value, [0, 1], [0, -6]);
-    const borderRadius = interpolate(progress.value, [0, 1], [0, 24]);
+  const ctrAnimatedStyle = useAnimatedStyle(() => {
+    const [translateX, translateY, rotateZ, borderRadius] = [
+      ANIMATED_SCREEN.TRANSLATE_X,
+      ANIMATED_SCREEN.TRANSLATE_Y,
+      ANIMATED_SCREEN.ROTATE_Z,
+      ANIMATED_SCREEN.BORDER_RADIUS,
+    ].map(value => interpolate(progress.value, [0, 1], [0, value]));
+
     return {
-      transform: [{translateX}, {translateY}, {rotateZ: `${rotateZ}deg`}],
+      transform: [{ translateX }, { translateY }, { rotateZ: `${rotateZ}deg` }],
       borderRadius,
     };
   });
 
-  const animatedStyle2 = useAnimatedStyle(() => {
+  const rootAnimatedStyle = useAnimatedStyle(() => {
     const translateY = interpolate(progress.value, [0, 1], [0, top]);
 
-    return {transform: [{translateY}]};
+    return { transform: [{ translateY }] };
   });
 
   return (
-    <Animated.View
-      style={[{flex: 1, backgroundColor: '#1b1b2c'}, animatedStyle2]}>
-      <Animated.View
-        style={[
-          {
-            flex: 1,
-            backgroundColor: '#fafafa',
-            overflow: 'hidden',
-          },
-          animatedStyle,
-        ]}>
+    <Animated.View style={[styles.root, rootAnimatedStyle]}>
+      <Animated.View style={[styles.container, ctrAnimatedStyle]}>
         <BottomTabNavigator />
       </Animated.View>
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#1B1B2C',
+  },
+  container: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+});

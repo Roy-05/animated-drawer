@@ -1,27 +1,38 @@
-import {useDrawerProgress} from '@react-navigation/drawer';
-import {Text, View} from 'react-native';
-import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {SCREEN} from '../../utils/screenNames';
-import {DrawerItem} from '../../components/drawer/DrawerItem';
+import {
+  DrawerContentComponentProps,
+  useDrawerProgress,
+} from '@react-navigation/drawer';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SCREEN } from '../../utils/screenNames';
+import { DrawerItem } from '../../components/drawer/DrawerItem';
+import { ANIMATED_SCREEN, DRAWER_ROUTES } from '../../utils/constants';
+import { IDrawerItem } from '../../types';
 
-export const AnimatedDrawer = ({navigation}) => {
-  const insets = useSafeAreaInsets();
+export const AnimatedDrawer = ({ navigation }: DrawerContentComponentProps) => {
+  const { top } = useSafeAreaInsets();
   const progress = useDrawerProgress();
 
-  // Animate the drawer's translation and border radius
   const animatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(progress.value, [0, 1], [0, insets.top]);
-    const borderTopLeftRadius = interpolate(progress.value, [0, 1], [0, 16]);
+    const translateY = interpolate(progress.value, [0, 1], [0, top]);
+    const borderTopLeftRadius = interpolate(
+      progress.value,
+      [0, 1],
+      [0, ANIMATED_SCREEN.BORDER_RADIUS],
+    );
 
     return {
-      transform: [{translateY}],
+      transform: [{ translateY }],
       borderTopLeftRadius,
     };
   });
 
-  const onPress = item => {
-    console.log(item);
+  const onPress = (item: IDrawerItem) => {
+    console.log(navigation.getState());
     navigation.navigate(SCREEN.ROOT, item.routeObj);
   };
 
@@ -31,72 +42,15 @@ export const AnimatedDrawer = ({navigation}) => {
         flexGrow: 1,
         alignSelf: 'stretch',
       }}>
-      <Animated.View
-        style={[
-          {
-            backgroundColor: '#1b1b2c',
-            flex: 1,
-            flexGrow: 1,
-            margin: 0,
-            width: '100%',
-            paddingVertical: 64,
-            alignItems: 'flex-end',
-            rowGap: 32,
-          },
-          animatedStyle,
-        ]}>
-        <Text
-          style={{
-            fontWeight: 800,
-            color: '#eaeaea',
-            fontSize: 20,
-            letterSpacing: 0.3,
-            alignSelf: 'center',
-          }}>
-          Beka
-        </Text>
+      <Animated.View style={[styles.root, animatedStyle]}>
+        <Text style={styles.title}>Beka</Text>
 
-        <View style={{rowGap: 8, flex: 1}}>
-          {/*  'SIGN OUT' */}
-          {[
-            {
-              label: 'Start',
-              routeObj: {
-                screen: SCREEN.HOME,
-                params: {
-                  screen: SCREEN.YOUR_ORDERS,
-                },
-              },
-            },
-            {
-              label: 'Your Cart',
-              routeObj: {
-                screen: SCREEN.YOUR_CART,
-              },
-            },
-            {
-              label: 'Favourites',
-              routeObj: {
-                screen: SCREEN.HOME,
-                params: {
-                  screen: SCREEN.FAVOURITES,
-                },
-              },
-            },
-            {
-              label: 'Your Orders',
-              routeObj: {
-                screen: SCREEN.HOME,
-                params: {
-                  screen: SCREEN.YOUR_ORDERS,
-                },
-              },
-            },
-          ].map((item, index) => (
+        <View style={{ rowGap: 8, flex: 1 }}>
+          {DRAWER_ROUTES.map((item, index) => (
             <DrawerItem
+              key={item?.label}
               focused={index === 0}
               item={item}
-              label={item?.label}
               onPress={() => onPress(item)}
             />
           ))}
@@ -105,3 +59,24 @@ export const AnimatedDrawer = ({navigation}) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    backgroundColor: '#1B1B2C',
+    flex: 1,
+    flexGrow: 1,
+    margin: 0,
+    width: '100%',
+    paddingVertical: 64,
+    alignItems: 'flex-end',
+    rowGap: 32,
+  },
+
+  title: {
+    fontWeight: 800,
+    color: '#EAEAEA',
+    fontSize: 20,
+    letterSpacing: 0.3,
+    alignSelf: 'center',
+  },
+});

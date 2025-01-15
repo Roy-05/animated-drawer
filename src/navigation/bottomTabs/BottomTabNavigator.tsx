@@ -1,7 +1,7 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {SCREEN} from '../../utils/screenNames';
-import {HomeStackNavigator} from '../stacks/HomeStackNavigator';
-import {YourCartScreen} from '../../screens/YourCartScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { SCREEN } from '../../utils/screenNames';
+import { HomeStackNavigator } from '../stacks/HomeStackNavigator';
+import { YourCartScreen } from '../../screens/YourCartScreen';
 
 const Tab = createBottomTabNavigator();
 
