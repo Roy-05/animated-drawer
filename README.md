@@ -65,11 +65,9 @@ Animations are driven by `react-native-reanimated`, primarily by interpolating t
 
 ### Animation Demos
 
-- **Triggering the Drawer via touch action**:  
-  [![Animation via Touch](https://github.com/user-attachments/assets/7d92009f-a93e-4541-9c06-e08a28746ab5)](https://github.com/user-attachments/assets/7d92009f-a93e-4541-9c06-e08a28746ab5)
+[![Animation via Touch](https://github.com/user-attachments/assets/65151d15-918f-4cc4-83c9-02aa0d7186dd)](https://github.com/user-attachments/assets/65151d15-918f-4cc4-83c9-02aa0d7186dd)
 
-- **Triggering the Drawer via swipe action**:  
-  [![Animation via Swipe](https://github.com/user-attachments/assets/e286284d-0287-40b1-b695-fc699417f601)](https://github.com/user-attachments/assets/e286284d-0287-40b1-b695-fc699417f601)
+[![Animation via Swipe](https://github.com/user-attachments/assets/e286284d-0287-40b1-b695-fc699417f601)](https://github.com/user-attachments/assets/e286284d-0287-40b1-b695-fc699417f601)
 
 ## 6. Performance
 
@@ -81,4 +79,4 @@ Using the **Perf Monitor** bundled with React Native to track FPS on both thread
 
 ### Performance Demo
 
-[![Performance](https://github.com/user-attachments/assets/65151d15-918f-4cc4-83c9-02aa0d7186dd)](https://github.com/user-attachments/assets/65151d15-918f-4cc4-83c9-02aa0d7186dd)
+[![Performance](https://github.com/user-attachments/assets/7d92009f-a93e-4541-9c06-e08a28746ab5)](https://github.com/user-attachments/assets/7d92009f-a93e-4541-9c06-e08a28746ab5)
